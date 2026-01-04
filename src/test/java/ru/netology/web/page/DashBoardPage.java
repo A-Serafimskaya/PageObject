@@ -23,10 +23,6 @@ public class DashBoardPage {
 
     }
 
-    public int getFirstCardBalance() {
-        var text = cards.first().text();
-        return extractBalance(text);
-    }
 
     private int extractBalance(String text) {
         var start = text.indexOf(balanceStart);
@@ -34,38 +30,31 @@ public class DashBoardPage {
         var value = text.substring(start + balanceStart.length(), finish);
         return Integer.parseInt(value);
     }
-
-
-    public int getCardBalance(String id) {
-        for (SelenideElement card : cards) {
-            String cardId = card.getAttribute("data-test-id");
-            if (id.equals(cardId)) {
-                String text = card.text();
-                return extractBalance(text);
-            }
-        }
-        throw new RuntimeException("Карта с data-test-id = " + id + " не найдена");
+    private SelenideElement getCardElement(DataHelper.CardInfo cardInfo) {
+        return cards.find(Condition.attribute("data-test-id", cardInfo.getTestId()));
     }
 
-    public Transfer cardSelection(String id) {
-        for (SelenideElement card : cards) {
-            String cardId = card.getAttribute("data-test-id");
-            if (id.equals(cardId)) {
-                card.$("[data-test-id=action-deposit]").click();
-                return new Transfer();
-            }
+    public int getCardBalance(DataHelper.CardInfo cardInfo) {
+        var text = getCardElement(cardInfo).getText();
+        return extractBalance(text);
+    }
 
-        }
-
-        throw new RuntimeException("Карта с id " + id + " не найдена");
-
+    public Transfer cardSelection(DataHelper.CardInfo cardInfo) {
+        getCardElement(cardInfo).$("[data-test-id=action-deposit]").click();
+        return new Transfer();
     }
 
     public void renewCardBalances() {
         $("[data-test-id=action-reload]").click();
     }
 
+    public int getCardBalance(String testId) {
+        return 0;
+    }
 
+    public Transfer cardSelection(String testId) {
+        return new Transfer();
+    }
 }
 
 

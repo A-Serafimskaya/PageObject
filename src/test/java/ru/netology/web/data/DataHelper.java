@@ -1,6 +1,9 @@
 package ru.netology.web.data;
 
 import lombok.Value;
+import ru.netology.web.page.DashBoardPage;
+
+import java.util.Random;
 
 public class DataHelper {
     private DataHelper() {
@@ -15,63 +18,6 @@ public class DataHelper {
     }
 
 
-    //    @Value
-    public static class AuthInfo {
-        String login;
-        String password;
-
-
-        public AuthInfo(String login, String password) {
-            this.login = login;
-            this.password = password;
-        }
-
-
-        public String getLogin() {
-            return login;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-    }
-
-    //    @Value
-    public static class VerificationCode {
-        String code;
-
-        public VerificationCode(String code) {
-            this.code = code;
-        }
-
-
-        public String getCode() {
-            return code;
-        }
-    }
-
-    //    @Value
-    public static class CardInfo {
-
-
-        public String getTestId() {
-            return testId;
-        }
-
-        public String getNumber() {
-            return number;
-        }
-
-        private String number;
-        private String testId;
-
-        public CardInfo(String number, String testId) {
-            this.number = number;
-            this.testId = testId;
-        }
-    }
-
     public static CardInfo getFirstCardInfo() {
         return new CardInfo("5559 0000 0000 0001", "92df3f1c-a033-48e6-8390-206f6b1f56c0");
     }
@@ -79,8 +25,33 @@ public class DataHelper {
     public static CardInfo getSecondCardInfo() {
         return new CardInfo("5559 0000 0000 0002", "0f3f5c2a-249e-4c3d-8287-09f7a039391d");
     }
-}
 
+
+    public static int transferAmountCalculator(int cardBalance) {
+        if (cardBalance <= 0) {
+            return 0; // либо бросить исключение, если баланс нулевой
+        }
+        return new Random().nextInt(cardBalance);
+    }
+
+    @Value
+    public static class AuthInfo {
+        String login;
+        String password;
+    }
+
+    @Value
+    public static class VerificationCode {
+        String code;
+    }
+
+    @Value
+    public static class CardInfo {
+
+        String number;
+        String testId;
+    }
+}
 
 
 
