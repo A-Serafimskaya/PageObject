@@ -2,22 +2,18 @@ package ru.netology.web.test;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
-import ru.netology.web.page.DashBoardPage;
 import ru.netology.web.page.LoginPageV2;
 import ru.netology.web.page.Transfer;
-
 
 import java.time.Duration;
 import java.util.Random;
 
-import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.netology.web.data.DataHelper.*;
-import static ru.netology.web.data.DataHelper.getFirstCardInfo;
+
 
 public class MoneyTransferTest {
     private LoginPageV2 loginPage;
@@ -38,15 +34,15 @@ public class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(info); // выполнение входа
         var dashBoardPage = verificationPage.validVerify(verificationCode); // ввод кода подтверждения и переход на дашборд
 
-        int initialBalanceFirstCard = dashBoardPage.getCardBalance(toCard.getTestId()); // проверяем балансы перед операцией
-        int initialBalanceSecondCard = dashBoardPage.getCardBalance(fromCard.getTestId());
+        int initialBalanceFirstCard = dashBoardPage.getCardBalance(toCard); // проверяем балансы перед операцией
+        int initialBalanceSecondCard = dashBoardPage.getCardBalance(fromCard);
 
-        int amount = DataHelper.transferAmountCalculator(initialBalanceSecondCard); // генерируем сумму пополнения в рамках баланса второй карты до перевода
+        int amount = DataHelper.transferValidAmountCalculator(initialBalanceSecondCard); // генерируем сумму пополнения в рамках баланса второй карты до перевода
         var transfer = dashBoardPage.cardSelection(toCard); // создали объект трансфер, выбрали карту
-        transfer.transfer(String.valueOf(amount), fromCard); // вызвали метод трансфер; перевели деньги
+        transfer.transfer(amount, fromCard);
 
-        int finalBalanceFirstCard = dashBoardPage.getCardBalance(toCard.getTestId());
-        int finalBalanceSecondCard = dashBoardPage.getCardBalance(fromCard.getTestId());
+        int finalBalanceFirstCard = dashBoardPage.getCardBalance(toCard);
+        int finalBalanceSecondCard = dashBoardPage.getCardBalance(fromCard);
 
         var expectedFromCardBalanceAfterTransfer = initialBalanceSecondCard - amount;// ожидаемый баланс после перевода
         var expectedToCardBalanceAfterTransfer = initialBalanceFirstCard + amount;
@@ -67,15 +63,15 @@ public class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(info); // выполнение входа
         var dashBoardPage = verificationPage.validVerify(verificationCode); // ввод кода подтверждения и переход на дашборд
 
-        int initialBalanceFirstCard = dashBoardPage.getCardBalance(fromCard.getTestId());
-        int initialBalanceSecondCard = dashBoardPage.getCardBalance(toCard.getTestId());
+        int initialBalanceFirstCard = dashBoardPage.getCardBalance(fromCard);
+        int initialBalanceSecondCard = dashBoardPage.getCardBalance(toCard);
 
-        int amount = DataHelper.transferAmountCalculator(initialBalanceFirstCard);
+        int amount = DataHelper.transferValidAmountCalculator(initialBalanceFirstCard);
         var transfer = dashBoardPage.cardSelection(toCard); // создали объект трансфер, выбрали карту
-        transfer.transfer(String.valueOf(amount), toCard); // вызвали метод трансфер; перевели деньги
+        transfer.transfer(amount, fromCard); // вызвали метод трансфер; перевели деньги
 
-        int finalBalanceFirstCard = dashBoardPage.getCardBalance(toCard.getTestId());
-        int finalBalanceSecondCard = dashBoardPage.getCardBalance(fromCard.getTestId());
+        int finalBalanceFirstCard = dashBoardPage.getCardBalance(toCard);
+        int finalBalanceSecondCard = dashBoardPage.getCardBalance(fromCard);
 
         var expectedFromCardBalanceAfterTransfer = initialBalanceFirstCard - amount;// рассчитываем ожидаемый баланс первой карты после перевода
         var expectedToCardBalanceAfterTransfer = initialBalanceSecondCard + amount;// рассчитываем ожидаемый баланс второй карты после перевода
@@ -98,20 +94,21 @@ public class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(info); // выполнение входа
         var dashBoardPage = verificationPage.validVerify(verificationCode); // ввод кода подтверждения и переход на дашборд
 
-        int initialBalanceFirstCard = dashBoardPage.getCardBalance(fromCard.getTestId());
-        int initialBalanceSecondCard = dashBoardPage.getCardBalance(toCard.getTestId()); // проверяем баланс перед операцией
+        int initialBalanceFirstCard = dashBoardPage.getCardBalance(fromCard);
+        int initialBalanceSecondCard = dashBoardPage.getCardBalance(toCard); // проверяем баланс перед операцией
 
-        int maxLimit = initialBalanceSecondCard + 1000; // пример верхней границы
-        int amount = new Random().nextInt(maxLimit - initialBalanceSecondCard) + initialBalanceSecondCard + 1; // генерируем сумму пополнения больше баланса второй карты до перевода
+
+        int offset = 1000; // или другой размер, который подходит для теста
+        int amount = DataHelper.transferInValidAmountCalculator(initialBalanceSecondCard, offset);
 
         var transfer = dashBoardPage.cardSelection(toCard);
 
         transfer.transfer(amount, fromCard);
 
         Transfer.errorMessage.shouldBe(Condition.visible, Duration.ofSeconds(15));
-        assertTrue(Transfer.errorMessage.getText().contains("Ошибка!"), "Сообщение не содержит 'Ошибка!'");
-        assertEquals(dashBoardPage.getCardBalance(fromCard.getTestId()), initialBalanceSecondCard);
-        assertEquals(dashBoardPage.getCardBalance(toCard.getTestId()), initialBalanceFirstCard);
+        assertTrue(Transfer.errorMessage.getText().contains(expectedMessage), "Сообщение не содержит 'Ошибка!'");
+        assertEquals(dashBoardPage.getCardBalance(fromCard), initialBalanceSecondCard);
+        assertEquals(dashBoardPage.getCardBalance(toCard), initialBalanceFirstCard);
 
     }
 

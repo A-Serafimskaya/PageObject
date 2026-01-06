@@ -16,7 +16,7 @@ public class Transfer {
     private final SelenideElement amountField = $("[data-test-id='amount'] input");
     private final SelenideElement transferFromField = $("[data-test-id=from] input");
     private final SelenideElement buttonToTransfer = $("[data-test-id=action-transfer]");
-    public static SelenideElement errorMessage = $("[data-test-id=error-notification]");
+    private static SelenideElement errorMessage = $("[data-test-id=error-notification]");
 
     public Transfer() {
         amountField.should(Condition.visible, Duration.ofSeconds(15));
@@ -31,16 +31,10 @@ public class Transfer {
         amountField.setValue(String.valueOf(amount));
         transferFromField.setValue(String.valueOf(fromCard.getNumber()));
         buttonToTransfer.click();
-
-
     }
-
 
     public void checkErrorMessage(String errorText) {
         errorMessage.should(Condition.visible).shouldHave(Condition.text(errorText));
-    }
-
-    public void transfer(String s, DataHelper.CardInfo fromCard) {
     }
 
 }

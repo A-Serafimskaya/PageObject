@@ -30,6 +30,7 @@ public class DashBoardPage {
         var value = text.substring(start + balanceStart.length(), finish);
         return Integer.parseInt(value);
     }
+
     private SelenideElement getCardElement(DataHelper.CardInfo cardInfo) {
         return cards.find(Condition.attribute("data-test-id", cardInfo.getTestId()));
     }
@@ -44,21 +45,4 @@ public class DashBoardPage {
         return new Transfer();
     }
 
-    public void renewCardBalances() {
-        $("[data-test-id=action-reload]").click();
-    }
-
-    public int getCardBalance(String testId) {
-        return 0;
-    }
-
-    public Transfer cardSelection(String testId) {
-        return new Transfer();
-    }
 }
-
-
-
-
-
-

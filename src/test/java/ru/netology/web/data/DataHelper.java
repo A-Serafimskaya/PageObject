@@ -9,6 +9,24 @@ public class DataHelper {
     private DataHelper() {
     }
 
+    @Value
+    public static class AuthInfo {
+        String login;
+        String password;
+    }
+
+    @Value
+    public static class VerificationCode {
+        String code;
+    }
+
+    @Value
+    public static class CardInfo {
+
+        String number;
+        String testId;
+    }
+
     public static AuthInfo getAuthInfo() {
         return new AuthInfo("vasya", "qwerty123");
     }
@@ -27,32 +45,22 @@ public class DataHelper {
     }
 
 
-    public static int transferAmountCalculator(int cardBalance) {
+    public static int transferValidAmountCalculator(int cardBalance) {
         if (cardBalance <= 0) {
             return 0; // либо бросить исключение, если баланс нулевой
         }
         return new Random().nextInt(cardBalance);
     }
 
-    @Value
-    public static class AuthInfo {
-        String login;
-        String password;
-    }
+    public static int transferInValidAmountCalculator(int cardBalance, int offset) {
 
-    @Value
-    public static class VerificationCode {
-        String code;
-    }
-
-    @Value
-    public static class CardInfo {
-
-        String number;
-        String testId;
+        if (cardBalance <= 0) {
+            return 0;
+        }
+        int maxLimit = cardBalance + offset;
+        return new Random().nextInt(maxLimit - cardBalance) + cardBalance + 1;
     }
 }
-
 
 
 
