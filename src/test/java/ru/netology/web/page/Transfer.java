@@ -22,6 +22,8 @@ public class Transfer {
         amountField.should(Condition.visible, Duration.ofSeconds(15));
     }
 
+
+
     public DashBoardPage validTransfer(int amount, DataHelper.CardInfo secondCard) {
         transfer(amount, secondCard);
         return new DashBoardPage();
@@ -35,6 +37,11 @@ public class Transfer {
 
     public void checkErrorMessage(String errorText) {
         errorMessage.should(Condition.visible).shouldHave(Condition.text(errorText));
+    }
+
+    public void shouldSeeErrorMessage(String expectedText) {
+        errorMessage.shouldBe(Condition.visible, Duration.ofSeconds(15));
+        errorMessage.shouldHave(Condition.text(expectedText));
     }
 
 }

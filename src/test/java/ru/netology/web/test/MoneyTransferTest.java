@@ -70,8 +70,8 @@ public class MoneyTransferTest {
         var transfer = dashBoardPage.cardSelection(toCard); // создали объект трансфер, выбрали карту
         transfer.transfer(amount, fromCard); // вызвали метод трансфер; перевели деньги
 
-        int finalBalanceFirstCard = dashBoardPage.getCardBalance(toCard);
-        int finalBalanceSecondCard = dashBoardPage.getCardBalance(fromCard);
+        int finalBalanceFirstCard = dashBoardPage.getCardBalance(fromCard);
+        int finalBalanceSecondCard = dashBoardPage.getCardBalance(toCard);
 
         var expectedFromCardBalanceAfterTransfer = initialBalanceFirstCard - amount;// рассчитываем ожидаемый баланс первой карты после перевода
         var expectedToCardBalanceAfterTransfer = initialBalanceSecondCard + amount;// рассчитываем ожидаемый баланс второй карты после перевода
@@ -105,8 +105,7 @@ public class MoneyTransferTest {
 
         transfer.transfer(amount, fromCard);
 
-        Transfer.errorMessage.shouldBe(Condition.visible, Duration.ofSeconds(15));
-        assertTrue(Transfer.errorMessage.getText().contains(expectedMessage), "Сообщение не содержит 'Ошибка!'");
+        transfer.shouldSeeErrorMessage(expectedMessage);
         assertEquals(dashBoardPage.getCardBalance(fromCard), initialBalanceSecondCard);
         assertEquals(dashBoardPage.getCardBalance(toCard), initialBalanceFirstCard);
 
